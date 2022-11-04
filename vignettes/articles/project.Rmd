@@ -183,7 +183,7 @@ The observed value of the test statistic for the linear regression test
 is:
 
 $$\tau_{obs} = \frac{\hat{\beta}}{s_{Y \mid X}\sqrt{S_{XX}}}\sim{t_{df}}$$
-Where, $\beta$ is the true slope parameter, jbhbcehb\
+Where, $\beta$ is the true slope parameter
 \
 
 $\therefore$ $\tau_{obs}$ = `r tvalue`\
@@ -238,12 +238,12 @@ We are testing:
 
 ```{=tex}
 \begin{center}
-$H_{0}$ : $\mu1 = \mu2 $  against  $H_{1}$ :  $\mu_1  \neq \mu_2 $
+$H_{0}$ : $\mu_{1}$ = $\mu_{2}$  against  $H_{1}$ :  $\mu_1  \neq \mu_2 $
 \end{center}
 ```
 Where:\
 $H_{0}$ is the null hypothesis and $H_{1}$ is the alternate hypothesis,\
-$\mu1$ is the mean height of male and $\mu2$ is the mean height of
+$\mu_1$ is the mean height of male and $\mu_2$ is the mean height of
 female
 
 ## Assumptions:

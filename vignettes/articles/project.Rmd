@@ -1,0 +1,460 @@
+---
+title: "Project"
+author: "Het Patel"
+date: "2022-10-12"
+output: pdf_document
+fontsize: 12pt
+bibliography: "references.bib"
+params:
+  data: project2022.csv
+---
+
+```{r setup, include=FALSE}
+
+library(tidyverse)
+library(ggpubr)
+library(janitor)
+library(knitr)
+
+```
+
+```{r data 1, include=FALSE}
+project <- read.csv(params$data)
+
+a <- project %>%
+  select("height", "weight") #this filters the dataset to only have the 'height' and 'weight' columns
+
+b <- project %>%
+  select("gender", "height") #this filters the dataset to only have the 'height' and 'weight' columns
+
+test2_male <- b %>%
+  filter(gender == "Male")
+
+test2_female <- b %>%
+  filter(gender == "Female")
+
+c <- project %>%
+  select("gender", "phys") #this filters the dataset to only have the 'height' and 'weight' columns
+
+female_none <- length(which(c$gender=="Female"&c$phys=="None"))
+female_none
+female_moderate <- length(which(c$gender=="Female"&c$phys=="Moderate"))
+female_moderate
+female_intense <- length(which(c$gender=="Female"&c$phys=="Intense"))
+female_intense
+
+male_none <- length(which(c$gender=="Male"&c$phys=="None"))
+male_none
+male_moderate <- length(which(c$gender=="Male"&c$phys=="Moderate"))
+male_moderate
+male_intense <- length(which(c$gender=="Male"&c$phys=="Intense"))
+male_intense
+
+gender_phys <- matrix(c(female_none, male_none, female_moderate, male_moderate, female_intense,male_intense), ncol=2,byrow=TRUE)
+colnames(gender_phys) <- c("Female", "Male")
+rownames(gender_phys) <- c("None","Moderate","Intense")
+gender_phys <- as.table(gender_phys)
+```
+
+# Abstract:
+
+## Linear Regression Test:
+
+This test was conducted in order to determine whether there was a linear
+relationship between height and weight.  
+\
+**Findings:**
+
+|                        | Test Statistic | Degrees of Freedom | P-Value             | 95% Confidence Interval |
+|------------------------|----------------|--------------------|---------------------|-------------------------|
+| Linear Regression Test | 17.3341348     | 998                | 4.8071712 x 10\^-59 | (0.2648081, 0.3324183)  |
+
+Therefore, it is determined that there is a linear relationship between
+height and weight.
+
+## Two-Sample T-Test:
+
+This test was conducted in order to determine whether the mean height of
+males and females are the same.  
+\
+**Findings:**
+
+|                        | Test Statistic | Degrees of Freedom | P-Value              | 95% Confidence Interval |
+|------------------------|----------------|--------------------|----------------------|-------------------------|
+| Linear Regression Test | 39.8477942     | 998                | 1.5319544 x 10\^-208 | (9.6501189, 10.6498089) |
+
+Therefore, it is determined that the mean height of males and females
+are not the same.
+
+## Test for Independance:
+
+This test was conducted in order to determine whether there is any
+association between gender and amount of physical activity.  
+\
+**Findings:**
+
+|                        | Test Statistic | Degrees of Freedom | P-Value   |
+|------------------------|----------------|--------------------|-----------|
+| Linear Regression Test | 3.226111       | 3                  | 0.1992778 |
+
+Therefore, it is determined that gender and amount of physical activity
+are independant of each other.
+
+# Introduction:
+
+This report aims to use multiple statistical tests to examine a data set
+about the weights, heights and amount of physical activity for males and
+females. There are three tests that will be conducted: linear
+regression, two-sample t-test and the test for independance
+($\chi^{2}$). Through conducting these tests, the report is able to
+highlight the practicality and convenience of statistical tests.\
+\
+
+This report will answer three research questions, all pertaining to a
+different statistical test:\
+\
+**Q1:** Is there a linear relationship between height and weight? This
+will be answered through a linear regresssion test.\
+**Q2:** Is the mean height of male and female the same? This will be
+answered through a two-sample t-test.\
+**Q3:** Is there any association between gender and the amount of
+physical activity? This will be answered through a test for independance
+($\chi^{2}$).
+
+
+# Methods:
+
+All three tests require the following structure:\
+**1.** State the null and alternate hypotheses\
+**2.** State the assumptions and prove them\
+**3.** Calculate the observed value of the test-statistic\
+**4.** Calculate the P-Value\
+**5.** Calculate the confidence interval\
+**6.** Conclusion to the test
+
+\newpage
+
+# Linear Regression Test:
+
+## Hypothesis:
+
+We are testing:
+
+```{=tex}
+\begin{center}
+$H_{0}$ : $\beta$ = 0  against  $H_{1}$ :  $\beta$ $\neq$ 0
+\end{center}
+```
+Where:\
+$H_{0}$ is the null hypothesis and $H_{1}$ is the alternate hypothesis,\
+$\beta$ is the true slope parameter as in the model Y = $\alpha$ +
+$\beta$$X$ + $\epsilon$\
+
+## Assumptions:
+
+The assumptions for the linear regresson test are:\
+1. Linearity of the data\
+2. Residual errors have a mean of 0\
+3. Residual errors have constant variance \
+[@ASSU1]\
+\
+**Checking Assumptions:**
+
+```{r assumption_1, echo=FALSE, fig.cap="Proving Assumptions for Test 1",  out.width="75%"}
+residuals1 <- lm(formula = height ~ weight, data = a)$residuals #this creates a simple regression model
+par(mfrow = c(2,2))
+    plot(x = a, main = "height vs weight") #this plots  height vs weight
+    plot(x = residuals1, main = "Regression Residuals vs Fitted Values", xlab = "Fitted Values", ylab = "Regression Residuals") #this plots the scatter plot
+    hist(x = residuals1, main = "Histogram of the Regression Residuals", xlab = "Residuals") #this plots the histogram
+```
+
+It is clear from Figure 1 that all three assumptions have been proven,
+therefore the test can be conducted.
+
+## Observed Value of Test Statistic:
+
+```{r teststat1, echo=FALSE}
+lmtest <- lm(formula = height ~ weight, data = a)
+tvalue <- summary(lmtest)$coefficients[6]
+df <- lmtest$df.residual #this calculates the degrees of freedom
+```
+
+The observed value of the test statistic for the linear regression test
+is:
+
+$$\tau_{obs} = \frac{\hat{\beta}}{s_{Y \mid X}\sqrt{S_{XX}}}\sim{t_{df}}$$
+Where, $\beta$ is the true slope parameter, jbhbcehb\
+\
+
+$\therefore$ $\tau_{obs}$ = `r tvalue`\
+under $\sim$ $H_0$ and when df = `r df`
+
+## Calculation of P-Value:
+
+```{r p-value1, echo=FALSE}
+  pvalue1 <- summary(lmtest)$coefficients[8] #this calculates the p-value
+```
+
+The P-value for the linear regression test is:\
+\
+P-value = $P(|t_{`r df`}| \geq `r tvalue`) = `r pvalue1`$
+
+## Confidence Intervals:
+
+```{r ci_1, echo=FALSE}
+    ci1 <- confint.lm(lm(formula = height ~ weight, data = a), level = 0.95)[c(2,4)] ##this calculates the confident interval
+```
+
+The 95% confidence intervals for the linear regression test are:\
+\
+(`r ci1`)
+
+## Conclusion:
+
+```{r conc1, echo=FALSE}
+conc1 <- matrix(c(tvalue, df, pvalue1, ci1), ncol=5,byrow=TRUE)
+colnames(conc1) <- c("Test Statistic", "Degrees of Freedom", "P-Value", "Lower CI", "Upper CI")
+rownames(conc1) <- c("Linear Regression Test")
+conc1 <- as.table(conc1)
+kable(conc1, caption = "Results for Test 1")
+```
+
+*Note:* The exact value of the P-Value is 4.8071712 x $10^{-59}$  
+\
+It can be concluded that as the P-value is less than 0.05, there is
+enough evidence to reject the null hypothesis. Therefore, there **is** a
+linear relationship between height and weight. Furthermore, the 95%
+confidence interval is (0.2648081, 0.3324183), suggesting that 95 out of
+100 times, the estimate will fall between the upper and lower value
+[@CONC1]
+
+\newpage
+
+# Two-Sample T-Test:
+
+## Hypothesis
+
+We are testing:
+
+```{=tex}
+\begin{center}
+$H_{0}$ : $\mu1 = \mu2 $  against  $H_{1}$ :  $\mu_1  \neq \mu_2 $
+\end{center}
+```
+Where:\
+$H_{0}$ is the null hypothesis and $H_{1}$ is the alternate hypothesis,\
+$\mu1$ is the mean height of male and $\mu2$ is the mean height of
+female
+
+## Assumptions:
+
+The assumptions for the two-sample t-test are:\
+1. Data values must be independent\
+2. Data in each group are normally distributed\
+3. The variances for the two independent groups are **equal** [@ASSU2]\
+\
+
+**Checking Assumptions:**
+
+```{r assumption_2a, include=FALSE}
+  t2_p1 <- ggqqplot(b, x = "height", facet.by = "gender" ) + ggtitle("Proving Normality of the Data")
+  t2_p2 <- ggplot(b, aes(x = gender, y = height)) +
+    geom_boxplot() + #this plots the boxplot to prove equal variances
+    ggtitle("Proving Equal Variance") #this is the title of the plot
+   t2_p1
+   t2_p2
+```
+
+```{r assumption_2b, echo=FALSE, fig.show="hold", fig.cap="Proving Assumptions for Test 2", out.width="50%"}
+  t2_p1
+  t2_p2
+```
+
+It is clear from Figure 2 that all three assumptions have been proven,
+therefore the test can be conducted.
+
+\newpage
+
+```{r teststat2, echo=FALSE}
+ ttest <- t.test(test2_male$height, test2_female$height, var.equal = TRUE)
+  t_tvalue <- ttest$statistic
+  t_df <- ttest$parameter
+```
+
+## Observed Value of Test Statistic:
+
+The observed value of the test statistic for the two-sample t-test is:\
+$$\tau_{obs} = \frac{\overline{X}_1-\overline{X}_2}{S_p\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}}\sim{t_{{n}_{1}+{n}_{2}-2}}$$
+Where $\bar{X}_1$ and $\bar{X}_2$ are the sample means, $n_1$ and $n_2$
+are the sample sizes, and where $S_p^{2}$ (observed pool variance) is
+calculated by: $$
+S_p^2 = \frac{(n_1-1)s_1^2+(n_2-1)s_2^2}{n_1+n_2-2} 
+$$ $\therefore$ $\tau_{obs}$ = `r t_tvalue`\
+under $\sim$ $H_0$ and when df = `r t_df`
+
+## Calculation of P-Value:
+
+```{r p-value2, echo=FALSE}
+  t_pvalue <- ttest$p.value
+```
+
+The P-value for the two-sample t-test is:\
+\
+P-value = $P(|t_{`r t_df`} | \geq `r t_tvalue`) = `r t_pvalue`$
+
+## Confidence Intervals:
+
+```{r ci_2, echo=FALSE}
+  t_ci <- ttest$conf.int
+```
+
+The 95% confidence intervals for the two-sample t-test are:\
+\
+(`r t_ci`)
+
+## Conclusion:
+
+```{r conc2, echo=FALSE}
+conc2 <- matrix(c(t_tvalue, t_df, t_pvalue, t_ci), ncol=5,byrow=TRUE)
+colnames(conc2) <- c("Test Statistic", "Degrees of Freedom", "P-Value", "Lower CI", "Upper CI")
+rownames(conc2) <- c("Two-Sample T-Test")
+conc2 <- as.table(conc2)
+kable(conc2, caption = "Results for Test 2")
+```
+
+*Note:* The exact value of the P-Value is 1.5319544 x $10^{-208}$  
+\
+
+It can be concluded that as the P-value is less than 0.05, there is
+enough evidence to reject the null hypothesis. Therefore, the mean
+height of male and female are not equal. Furthermore, the 95% confidence
+interval is (9.6501189, 10.6498089), suggesting that 95 out of 100
+times, the estimate will fall between the upper and lower value [@CONC1]
+
+\newpage
+
+# Test for Independance:
+
+## Hypothesis:
+
+We are testing:
+
+$H_{0}$ : Gender and amount of physical activity are independant of each
+other *against*\
+$H_{1}$ : Gender and amount of physical activity are depdnant on each
+other
+
+Where:\
+$H_{0}$ is the null hypothesis and $H_{1}$ is the alternate hypothesis
+
+## Assumptions:
+
+The assumptions for the test for independance are:\
+1. Study groups must be independent\
+2. No cell shall have an expected value of less than 1\
+3. At least 80% of the cells must have an expected value greater than 5 
+[@ASSU3]
+
+**Checking Assumptions:**
+
+```{r assumption_3a, echo=FALSE}
+kable(gender_phys, caption = "Observed Values (Contingency Table)")
+```
+
+```{r assumptions_3b, echo=FALSE}
+none_total <- gender_phys[1,1] + gender_phys[1,2]
+moderate_total <- gender_phys[2,1] + gender_phys[2,2]
+intense_total <- gender_phys[3,1] + gender_phys[3,2]
+female_total <- gender_phys[1,1] + gender_phys[2,1] + gender_phys[3,1]
+male_total <- gender_phys[1,2] + gender_phys[2,2] + gender_phys[3,2]
+total_total <- female_total + male_total
+
+r1_col1 <- (none_total*female_total)/(total_total)
+r2_col1 <- (moderate_total*female_total)/(total_total)
+r3_col1 <- (intense_total*female_total)/(total_total)
+r1_col2 <- (none_total*male_total)/(total_total)
+r2_col2 <- (moderate_total*male_total)/(total_total)
+r3_col2 <- (intense_total*male_total)/(total_total)
+
+expected_values <- matrix(c(r1_col1, r1_col2, r2_col1, r2_col2, r3_col1, r3_col2), ncol=2,byrow=TRUE)
+colnames(expected_values) <- c("Female", "Male")
+rownames(expected_values) <- c("None","Moderate","Intense")
+expected_values <- as.table(expected_values)
+kable(expected_values, caption = "Expected Values")
+
+```
+
+It is clear from Table 7 that assumption #2 and #3 have been proven. It
+is also known that assumption #1 is true, therefore the test can be
+conducted.
+
+\newpage
+
+## Observed Value of Test Statistic:
+
+```{r teststat3, echo=FALSE}
+ chitest <- chisq.test(gender_phys)
+ xvalue <- chitest$statistic
+ chi_df <- chitest$parameter
+```
+
+The observed value of the test statistic for the test for for
+independance is:\
+$$\tau_{obs} = \sum_{i=1}^{r} \sum_{j=1}^{c}\frac{(O_{ij}-E_{ij})^2}{E_{ij}}\sim{\chi^2_{(r-1)(c-1)}}$$
+Where, $O_i$ is the observed value, $E_i$ is the expected value,
+r=number of rows, c=number of columns\
+$\therefore$ $\tau_{obs}$ = `r xvalue`\
+under $\sim$ $H_0$ and when df = `r chi_df`
+
+## Calculation of P-Value:
+
+```{r p-value3, echo=FALSE}
+  chi_pvalue <- chitest$p.value
+```
+
+The P-value for the test for independance is:\
+\
+P-value = $P(|t_{`r chi_df`} | \geq `r xvalue`) = `r chi_pvalue`$
+
+## Conclusion:
+
+```{r conc3, echo=FALSE}
+conc3 <- matrix(c(xvalue, chi_df, chi_pvalue), ncol=3,byrow=TRUE)
+colnames(conc3) <- c("Test Statistic", "Degrees of Freedom", "P-Value")
+rownames(conc3) <- c("Test for Independance")
+conc3 <- as.table(conc3)
+kable(conc3, caption = "Results for Test 3")
+```
+
+It can be concluded that as the P-value is greater than 0.05, there is
+not enough evidence to reject the null hypothesis. Therefore, gender and
+amount of physical activity are independant of each other.
+
+\newpage
+
+# Conclusion
+
+The aim of this report was the answer the following research questions:  
+\
+**Q1:** Is there a linear relationship between height and weight? (By
+conducting a linear regresssion test).\
+**Q2:** Is the mean height of male and female the same? (By conducting a
+two-sample t-test).\
+**Q3:** Is there any association between gender and the amount of
+physical activity? (By conducting a test for independance ($\chi^{2}$)).
+
+After stating the hypotheses, proving the assumptions and performing the
+statistical analysis for all three of the tests, it can be concluded
+that:
+
+| **Research Question** | **Statistical Test**   | **Answer to Research Question**                                      |
+|----------------|----------------|----------------------------------------|
+| #1                    | Linear Regression Test | There is a linear relationship between height and weight             |
+| #2                    | Two-Sample T-Test      | The mean height of males and females are not the same                |
+| #3                    | Test for Independance  | Gender and amount of physical activity are independant of each other |
+
+Therefore, through a real life scenario, this report was able to highlight the practicality and convenience of statistical tests.
+
+\newpage
+
+# References

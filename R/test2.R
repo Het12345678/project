@@ -10,6 +10,8 @@
 #' file_name <- project
 #' test2(file_name)
 
+library(magrittr)
+
 data(project)
 file_name <- project
 

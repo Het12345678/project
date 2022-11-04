@@ -18,13 +18,13 @@ file_name <- project
 test2 <- function(file_name){
 
   b <- file_name %>%
-    dplyr::select("gender", "height") #this filters the dataset to only have the 'height' and 'weight' columns
+    dplyr::select("gender", "height") #this filters the dataset to only have the 'gender' and 'height' columns
 
   test2_male <- b %>%
-    dplyr::filter(gender == "Male")
+    dplyr::filter(gender == "Male") #this filters only the male data
 
   test2_female <- b %>%
-    dplyr::filter(gender == "Female")
+    dplyr::filter(gender == "Female") #this filters only the female data
 
 #Stating the hypotheses:
 hypothesis2 <- function(b) {
@@ -45,7 +45,7 @@ assumptions2 <- function(b){ #this reads the file that is inputted in the functi
 
 #Statistical Analysis:
 analysis2 <- function(b) {
-  t_test <- t.test(test2_male$height, test2_female$height, var.equal = TRUE)
+  t_test <- t.test(test2_male$height, test2_female$height, var.equal = TRUE) #this is the t test
   t_tvalue <- t_test$statistic
   t_pvalue <- t_test$p.value
   t_df <- t_test$parameter
@@ -53,10 +53,9 @@ analysis2 <- function(b) {
   dataframe2 <- data.frame(Parameter = c("t value", "p value", "Degrees of Freedom","Lower CI", "Upper CI"), Value = c(t_tvalue, t_pvalue, t_df, t_ci)) #this puts the results obtained above into a data frame format (table)
   return(dataframe2)
 }
-test2_result <- analysis2(b)
+test2_result <- analysis2(b) #this is all the data from the t test
 
 #Decision of the test:
-
 decision2 <- function(analysis2){
   if (analysis2$Value[2] > 0.05) { #if statement that is testing whether the p-value (the 3rd value in  the 'test1' function above), is greater than the significance level of 0.05
     cat("As the P-value is greater than 0.05, at 95% significance level, the null hypothesis is not rejected") #if the p-value is greater than 0.05, then print this statement
@@ -79,5 +78,5 @@ print(test2_result)
 print(decision2(test2_result)) #this is the decision for the first test
 print(conclusion2(test2_result)) #this is the conclusion for test1
 }
-test2(file_name)
+test2(file_name) #this outputs all sections of the second test
 

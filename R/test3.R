@@ -20,7 +20,7 @@ test3 <- function(file_name){
   c <- file_name %>%
     dplyr::select("gender", "phys") #this filters the dataset to only have the 'height' and 'weight' columns
 
-  female_none <- length(which(c$gender=="Female"&c$phys=="None"))
+  female_none <- length(which(c$gender=="Female"&c$phys=="None")) #this counts the number of occurences of 'female' and 'none'
   female_none
   female_moderate <- length(which(c$gender=="Female"&c$phys=="Moderate"))
   female_moderate
@@ -38,7 +38,7 @@ test3 <- function(file_name){
   colnames(gender_phys) <- c("Female", "Male")
   rownames(gender_phys) <- c("None","Moderate","Intense")
   gender_phys <- as.table(gender_phys)
-  gender_phys
+  gender_phys #this puts in a table, the number of occurrences of each possibility
 
 #Stating the hypotheses:
 hypothesis3 <- function(c) {
@@ -49,14 +49,14 @@ hypothesis3 <- function(c) {
 #Proving the assumptions:
 
 assumptions3 <- function(c){ #this reads the file that is inputted in the function
-  none_total <- gender_phys[1,1] + gender_phys[1,2]
-  moderate_total <- gender_phys[2,1] + gender_phys[2,2]
+  none_total <- gender_phys[1,1] + gender_phys[1,2] #this calculates the total of the row
+  moderate_total <- gender_phys[2,1] + gender_phys[2,2] #this calculates the total of the column
   intense_total <- gender_phys[3,1] + gender_phys[3,2]
   female_total <- gender_phys[1,1] + gender_phys[2,1] + gender_phys[3,1]
   male_total <- gender_phys[1,2] + gender_phys[2,2] + gender_phys[3,2]
-  total_total <- female_total + male_total
+  total_total <- female_total + male_total #this calculates the total of every outcome
 
-  r1_col1 <- (none_total*female_total)/(total_total)
+  r1_col1 <- (none_total*female_total)/(total_total) #this calculates the expected value
   r2_col1 <- (moderate_total*female_total)/(total_total)
   r3_col1 <- (intense_total*female_total)/(total_total)
   r1_col2 <- (none_total*male_total)/(total_total)
@@ -67,19 +67,19 @@ assumptions3 <- function(c){ #this reads the file that is inputted in the functi
   colnames(expected_values) <- c("Female", "Male")
   rownames(expected_values) <- c("None","Moderate","Intense")
   expected_values <- as.table(expected_values)
-  return(expected_values)
+  return(expected_values) #this outputs every expected value in the table
 }
 
 #Statistical Analysis:
 analysis3 <- function(c) {
-  chitest <- chisq.test(gender_phys)
+  chitest <- chisq.test(gender_phys) #this conducts the chi test
   xvalue <- chitest$statistic
   chi_pvalue <- chitest$p.value
   chi_df <- chitest$parameter
   dataframe3 <- data.frame(Parameter = c("x value", "p value","Degrees of Freedom"), Value = c(xvalue, chi_pvalue, chi_df)) #this puts the results obtained above into a data frame format (table)
   return(dataframe3)
 }
-test3_result <- analysis3(c)
+test3_result <- analysis3(c) #this returns all the results from the chi test
 
 
 #Decision of the test:
@@ -106,5 +106,5 @@ print(test3_result)
 print(decision3(test3_result)) #this is the decision for the first test
 print(conclusion3(test3_result)) #this is the conclusion for test1
 }
-test3(file_name)
+test3(file_name) #this outputs all sections of the third test
 

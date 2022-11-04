@@ -12,7 +12,7 @@
 
 library(magrittr)
 
-data(project)
+data(project) #this loads the data (project2022 data) that is already saved into the package
 file_name <- project
 
 test1 <- function(file_name){
@@ -72,5 +72,5 @@ test1 <- function(file_name){
   print(decision1(test1_result)) #this is the decision for the first test
   print(conclusion1(test1_result)) #this is the conclusion for test1
 }
-test1(file_name)
+test1(file_name) #this outputs all sections of the first test
 
